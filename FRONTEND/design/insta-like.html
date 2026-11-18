@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CampusWari — Campus Flow</title>
+<style>
+  :root {
+    --bg: #ffffff;
+    --surface: #fafafa;
+    --border: #e5e5e5;
+    --text: #111111;
+    --muted: #737373;
+    --accent: #1a73e8;
+    --accent-soft: #e8f0fe;
+    --danger: #d93025;
+    --radius: 12px;
+    --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: var(--font); background: var(--bg); color: var(--text); -webkit-font-smoothing: antialiased; }
+
+  /* Layout */
+  .app { display: grid; grid-template-columns: 240px 1fr 300px; max-width: 1200px; margin: 0 auto; min-height: 100vh; }
+  .sidebar { border-right: 1px solid var(--border); padding: 24px 16px; position: sticky; top: 0; height: 100vh; }
+  .main { padding: 24px 24px 80px; max-width: 640px; margin: 0 auto; width: 100%; }
+  .aside { padding: 24px 16px; border-left: 1px solid var(--border); position: sticky; top: 0; height: 100vh; }
+
+  /* Brand */
+  .brand { display: flex; align-items: center; gap: 10px; padding: 0 8px 24px; }
+  .brand-mark { width: 32px; height: 32px; border-radius: 8px; background: var(--text); color: #fff; display: grid; place-items: center; font-weight: 700; font-size: 15px; }
+  .brand-name { font-weight: 700; font-size: 18px; letter-spacing: -0.3px; }
+
+  /* Nav */
+  .nav a { display: flex; align-items: center; gap: 12px; padding: 10px 8px; border-radius: 8px; color: var(--text); text-decoration: none; font-size: 15px; margin-bottom: 2px; }
+  .nav a:hover { background: var(--surface); }
+  .nav a.active { font-weight: 600; background: var(--surface); }
+  .nav .icon { width: 20px; text-align: center; font-size: 17px; }
+
+  /* Buttons */
+  .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 10px 18px; border-radius: 999px; border: 1px solid var(--border); background: #fff; color: var(--text); font-size: 14px; font-weight: 600; cursor: pointer; font-family: inherit; }
+  .btn:hover { background: var(--surface); }
+  .btn-primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .btn-primary:hover { filter: brightness(0.95); }
+  .btn-block { width: 100%; }
+  .btn-sm { padding: 6px 12px; font-size: 13px; }
+
+  /* Composer */
+  .composer { border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; margin-bottom: 16px; }
+  .composer-row { display: flex; gap: 12px; align-items: center; }
+  .avatar { width: 40px; height: 40px; border-radius: 50%; background: var(--accent-soft); color: var(--accent); display: grid; place-items: center; font-weight: 700; font-size: 14px; flex-shrink: 0; }
+  .avatar-sm { width: 32px; height: 32px; font-size: 12px; }
+  .composer input { flex: 1; border: none; outline: none; font-size: 15px; font-family: inherit; background: transparent; color: var(--text); }
+  .composer input::placeholder { color: var(--muted); }
+
+  /* Post card */
+  .post { border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; margin-bottom: 14px; }
+  .post-head { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+  .post-meta { display: flex; flex-direction: column; }
+  .post-name { font-weight: 600; font-size: 14px; }
+  .post-sub { font-size: 12px; color: var(--muted); }
+  .post-body { font-size: 15px; line-height: 1.5; margin-bottom: 12px; }
+  .post-image { width: 100%; border-radius: 10px; display: block; margin-bottom: 12px; background: var(--surface); aspect-ratio: 16/10; object-fit: cover; }
+  .post-actions { display: flex; gap: 6px; align-items: center; }
+  .act { display: inline-flex; align-items: center; gap: 6px; padding: 6px 10px; border-radius: 8px; border: none; background: transparent; color: var(--muted); font-size: 13px; font-weight: 500; cursor: pointer; font-family: inherit; }
+  .act:hover { background: var(--surface); color: var(--text); }
+  .act.liked { color: var(--danger); }
+  .post-more { margin-left: auto; }
+
+  /* Aside cards */
+  .aside-card { border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; margin-bottom: 16px; }
+  .aside-title { font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--muted); margin-bottom: 12px; }
+  .suggest { display: flex; align-items: center; gap: 10px; padding: 8px 0; }
+  .suggest-name { font-size: 14px; font-weight: 600; }
+  .suggest-sub { font-size: 12px; color: var(--muted); }
+  .tag { display: inline-block; font-size: 12px; padding: 5px 10px; border-radius: 999px; background: var(--surface); border: 1px solid var(--border); color: var(--text); margin: 0 6px 6px 0; cursor: pointer; }
+  .tag:hover { background: var(--accent-soft); border-color: var(--accent); color: var(--accent); }
+
+  /* Auth screen */
+  .auth { min-height: 100vh; display: grid; place-items: center; background: var(--surface); padding: 24px; }
+  .auth-card { background: #fff; border: 1px solid var(--border); border-radius: 16px; padding: 32px; width: 100%; max-width: 400px; }
+  .auth-card h1 { font-size: 24px; letter-spacing: -0.5px; margin-bottom: 6px; }
+  .auth-card p.sub { color: var(--muted); font-size: 14px; margin-bottom: 24px; }
+  .field { margin-bottom: 14px; }
+  .field label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px; }
+  .field input, .field textarea { width: 100%; padding: 11px 12px; border: 1px solid var(--border); border-radius: 8px; font-size: 14px; font-family: inherit; outline: none; background: #fff; }
+  .field input:focus, .field textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+  .hint { font-size: 12px; color: var(--muted); margin-top: 6px; }
+  .divider { display: flex; align-items: center; gap: 12px; color: var(--muted); font-size: 12px; margin: 20px 0; }
+  .divider::before, .divider::after { content: ""; flex: 1; height: 1px; background: var(--border); }
+
+  /* Modal */
+  .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.4); display: grid; place-items: center; padding: 20px; z-index: 50; }
+  .modal { background: #fff; border-radius: 16px; width: 100%; max-width: 520px; padding: 24px; }
+  .modal h2 { font-size: 18px; margin-bottom: 16px; }
+  .modal-footer { display: flex; justify-content: flex-end; gap: 10px; margin-top: 18px; }
+
+  @media (max-width: 1000px) {
+    .app { grid-template-columns: 72px 1fr; }
+    .brand-name, .nav span.label, .aside { display: none; }
+    .sidebar { padding: 24px 8px; }
+    .nav a { justify-content: center; padding: 12px 0; }
+  }
+  @media (max-width: 640px) {
+    .app { grid-template-columns: 1fr; }
+    .sidebar { display: none; }
+    .main { padding: 16px 12px 80px; }
+  }
+</style>
+</head>
+<body>
+<!-- ============ AUTH SCREEN (swap .auth in, comment out .app) ============ -->
+<!-- Uncomment to preview the login screen -->
+<!--
+<div class="auth">
+  <div class="auth-card">
+    <div class="brand" style="padding:0 0 24px">
+      <div class="brand-mark">CW</div>
+      <div class="brand-name">CampusWari</div>
+    </div>
+    <h1>Welcome back</h1>
+    <p class="sub">Log in with your college email.</p>
+    <div class="field">
+      <label>College email</label>
+      <input placeholder="you@college.edu">
+      <div class="hint">Only verified college domains are allowed.</div>
+    </div>
+    <div class="field">
+      <label>Password</label>
+      <input type="password" placeholder="••••••••">
+    </div>
+    <button class="btn btn-primary btn-block" style="margin-top:6px">Log in</button>
+    <div class="divider">or</div>
+    <button class="btn btn-block">Sign up with college email</button>
+    <p class="hint" style="text-align:center;margin-top:16px">Forgot password?</p>
+  </div>
+</div>
+-->
+
+<!-- ============ MAIN APP ============ -->
+<div class="app">
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-mark">CW</div>
+      <div class="brand-name">CampusWari</div>
+    </div>
+    <nav class="nav">
+      <a href="#" class="active"><span class="icon">⌂</span><span class="label">Feed</span></a>
+      <a href="#"><span class="icon">⌕</span><span class="label">Explore</span></a>
+      <a href="#"><span class="icon">＋</span><span class="label">Create</span></a>
+      <a href="#"><span class="icon">♡</span><span class="label">Notifications</span></a>
+      <a href="#"><span class="icon">☺</span><span class="label">Profile</span></a>
+      <a href="#"><span class="icon">⚙</span><span class="label">Settings</span></a>
+    </nav>
+    <button class="btn btn-primary btn-block" style="margin-top:20px">＋ New post</button>
+  </aside>
+
+  <!-- Main column -->
+  <main class="main">
+    <!-- Composer -->
+    <div class="composer">
+      <div class="composer-row">
+        <div class="avatar">PR</div>
+        <input placeholder="What's happening on campus?">
+        <button class="btn btn-sm">Post</button>
+      </div>
+    </div>
+
+    <!-- Feed filter -->
+    <div style="display:flex;gap:8px;margin-bottom:16px">
+      <button class="tag" style="background:var(--text);color:#fff;border-color:var(--text)">For you</button>
+      <button class="tag">Following</button>
+      <button class="tag">My college</button>
+    </div>
+
+    <!-- Post 1 -->
+    <article class="post">
+      <div class="post-head">
+        <div class="avatar">AK</div>
+        <div class="post-meta">
+          <div class="post-name">Aarav K.</div>
+          <div class="post-sub">IIT Delhi · 2h</div>
+        </div>
+        <button class="act post-more">⋯</button>
+      </div>
+      <p class="post-body">Library got new standing desks on the 3rd floor. Finally. Go grab one before 10am.</p>
+      <img class="post-image" src="https://images.unsplash.com/photo-1521587760476-6c12a4b040da?w=800&q=60" alt="Library desks">
+      <div class="post-actions">
+        <button class="act liked">♥ 124</button>
+        <button class="act">💬 18</button>
+        <button class="act">↗ Share</button>
+      </div>
+    </article>
+
+    <!-- Post 2 -->
+    <article class="post">
+      <div class="post-head">
+        <div class="avatar" style="background:#fce8e6;color:#d93025">MS</div>
+        <div class="post-meta">
+          <div class="post-name">Meera S.</div>
+          <div class="post-sub">BITS Pilani · 5h</div>
+        </div>
+        <button class="act post-more">⋯</button>
+      </div>
+      <p class="post-body">Anyone from CS third year want to join a study group for the OS mid-sem? We're 4 so far, meeting at the canteen at 7pm.</p>
+      <div class="post-actions">
+        <button class="act">♡ 42</button>
+        <button class="act">💬 27</button>
+        <button class="act">↗ Share</button>
+      </div>
+    </article>
+
+    <!-- Post 3 -->
+    <article class="post">
+      <div class="post-head">
+        <div class="avatar" style="background:#e6f4ea;color:#137333">RH</div>
+        <div class="post-meta">
+          <div class="post-name">Rohan H.</div>
+          <div class="post-sub">NIT Trichy · 8h</div>
+        </div>
+        <button class="act post-more">⋯</button>
+      </div>
+      <p class="post-body">Hostel wifi is down again in Block C. Already reported twice this week. Anyone else affected?</p>
+      <div class="post-actions">
+        <button class="act">♡ 89</button>
+        <button class="act">💬 56</button>
+        <button class="act">↗ Share</button>
+      </div>
+    </article>
+  </main>
+
+  <!-- Right aside -->
+  <aside class="aside">
+    <div class="aside-card">
+      <div class="aside-title">Trending on campus</div>
+      <button class="tag">#midterms</button>
+      <button class="tag">#festszn</button>
+      <button class="tag">#hostelwifi</button>
+      <button class="tag">#libraryhours</button>
+      <button class="tag">#placements</button>
+    </div>
+    <div class="aside-card">
+      <div class="aside-title">People to follow</div>
+      <div class="suggest">
+        <div class="avatar avatar-sm">DG</div>
+        <div style="flex:1">
+          <div class="suggest-name">Devika G.</div>
+          <div class="suggest-sub">IIT Bombay · CS</div>
+        </div>
+        <button class="btn btn-sm">Follow</button>
+      </div>
+      <div class="suggest">
+        <div class="avatar avatar-sm" style="background:#fce8e6;color:#d93025">KM</div>
+        <div style="flex:1">
+          <div class="suggest-name">Kabir M.</div>
+          <div class="suggest-sub">VIT Vellore · ECE</div>
+        </div>
+        <button class="btn btn-sm">Follow</button>
+      </div>
+      <div class="suggest">
+        <div class="avatar avatar-sm" style="background:#e6f4ea;color:#137333">AS</div>
+        <div style="flex:1">
+          <div class="suggest-name">Ananya S.</div>
+          <div class="suggest-sub">NIT Warangal · Mech</div>
+        </div>
+        <button class="btn btn-sm">Follow</button>
+      </div>
+    </div>
+    <div class="aside-card">
+      <div class="aside-title">Campus rules</div>
+      <p style="font-size:13px;color:var(--muted);line-height:1.5">Be kind. No doxxing. Report anything that breaks the rules. Moderators review every report.</p>
+    </div>
+  </aside>
+</div>
+
+<!-- ============ CREATE POST MODAL (uncomment to preview) ============ -->
+<!--
+<div class="overlay">
+  <div class="modal">
+    <h2>Create a post</h2>
+    <div class="field">
+      <textarea rows="5" placeholder="Say something to your campus..."></textarea>
+      <div class="hint">Max 500 characters. One image allowed.</div>
+    </div>
+    <button class="btn btn-block" style="justify-content:flex-start">🖼 Add one image</button>
+    <div class="modal-footer">
+      <button class="btn">Cancel</button>
+      <button class="btn btn-primary">Post</button>
+    </div>
+  </div>
+</div>
+-->
+</body>
+</html>

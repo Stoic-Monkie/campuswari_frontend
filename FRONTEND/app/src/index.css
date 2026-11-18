@@ -1,0 +1,91 @@
+@import "tailwindcss";
+
+/* Dark mode is controlled by a `dark` class on <html> (see src/lib/theme.ts). */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/*
+  DESIGN TOKENS: the one place to edit colours.
+  Source of truth for decisions: FRONTEND/Assets/brand.md
+
+  STATUS: neutrals are DRAFT. --accent and --spark are TEMPORARY (plain ink)
+  until the colour is decided. Change them here and the whole app follows.
+*/
+:root {
+  --bg: #faf7f2;
+  --card: #ffffff;
+  --fg: #211d1b;
+  --muted: #6f6760;
+  --line: #e8e1d8;
+
+  --accent: #2b2522; /* TEMP */
+  --on-accent: #ffffff; /* text on an accent background */
+  --spark: #2b2522; /* TEMP: used for likes */
+  --danger: #b3261e;
+
+  color-scheme: light;
+}
+
+.dark {
+  --bg: #171413;
+  --card: #1f1b1a;
+  --fg: #f1ece6;
+  --muted: #a39b93;
+  --line: #2e2927;
+
+  --accent: #f1ece6; /* TEMP */
+  --on-accent: #171413;
+  --spark: #f1ece6; /* TEMP */
+  --danger: #f2b8b5;
+
+  color-scheme: dark;
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-card: var(--card);
+  --color-fg: var(--fg);
+  --color-muted: var(--muted);
+  --color-line: var(--line);
+  --color-accent: var(--accent);
+  --color-on-accent: var(--on-accent);
+  --color-spark: var(--spark);
+  --color-danger: var(--danger);
+
+  --font-sans:
+    ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial,
+    sans-serif;
+  --radius-card: 0.75rem;
+}
+
+html,
+body,
+#root {
+  min-height: 100%;
+}
+
+body {
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  padding-top: env(safe-area-inset-top, 0px);
+}
+
+/* Wordmark: DM Serif Display capitals + Fraunces italic lowercase (LOCKED in brand.md) */
+.wm-cap {
+  font-family: "DM Serif Display", Georgia, serif;
+  font-weight: 400;
+  font-style: normal;
+}
+.wm-low {
+  font-family: "Fraunces", Georgia, serif;
+  font-weight: 400;
+  font-style: italic;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
